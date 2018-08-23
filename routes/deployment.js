@@ -6,25 +6,34 @@ const util = require('../util')
 const to = require('to-case')
 const exec = require('sync-exec')
 
+function extractPayload (res) {
+  switch (res.get('Content-Type')) {
+    case 'application/json':
+      return res.body
+    case 'application/x-www-form-urlencoded':
+      return JSON.parse(res.body.payload)
+  }
+}
+
 router.post('/', function (req, res, next) {
   if (!req.body) {
     return res.status(500).send('empty request body')
   }
 
-  const body = req.body
+  const payload = extractPayload(res)
 
-  const repository = body.repository
+  const repository = payload.repository
   const repoConfig = config[repository.name]
   if (!repoConfig) {
     return res.status(500).send(`repository ${repository.name} is not registered`)
   }
 
-  if (repoConfig.ref && repoConfig.ref !== body.ref) {
+  if (repoConfig.ref && repoConfig.ref !== payload.ref) {
     return res.send('ref is not matched, skip deployment')
   }
 
   if (config.events) {
-    const containValidEvents = body.events.reduce((prev, cur) => {
+    const containValidEvents = payload.events.reduce((prev, cur) => {
       return prev || config.events.indexOf(cur) !== -1
     }, false)
 
@@ -40,7 +49,7 @@ router.post('/', function (req, res, next) {
     return res.status.send(`can't find env variable GITHUB_WEBHOOK_${to.snake(repository.name).toUpperCase()}_SECRET`)
   }
 
-  if (signature && !util.verifySignature(signature, JSON.stringify(body), secret)) {
+  if (signature && !util.verifySignature(signature, JSON.stringify(payload), secret)) {
     return res.status(400).send('invalid signature')
   }
 
