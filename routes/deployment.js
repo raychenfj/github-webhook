@@ -11,24 +11,20 @@ router.post('/', function (req, res, next) {
     return res.status(500).send('empty request body')
   }
 
-  if (!req.body.payload) {
-    return res.status(500).send('empty payload')
-  }
+  const body = req.body
 
-  const payload = req.body.payload
-
-  const repository = payload.repository
+  const repository = body.repository
   const repoConfig = config[repository.name]
   if (!repoConfig) {
     return res.status(500).send(`repository ${repository.name} is not registered`)
   }
 
-  if (repoConfig.ref && repoConfig.ref !== payload.ref) {
+  if (repoConfig.ref && repoConfig.ref !== body.ref) {
     return res.send('ref is not matched, skip deployment')
   }
 
   if (config.events) {
-    const containValidEvents = payload.events.reduce((prev, cur) => {
+    const containValidEvents = body.events.reduce((prev, cur) => {
       return prev || config.events.indexOf(cur) !== -1
     }, false)
 
@@ -44,7 +40,7 @@ router.post('/', function (req, res, next) {
     return res.status.send(`can't find env variable GITHUB_WEBHOOK_${to.snake(repository.name).toUpperCase()}_SECRET`)
   }
 
-  if (signature && !util.verifySignature(signature, JSON.stringify(payload), secret)) {
+  if (signature && !util.verifySignature(signature, JSON.stringify(body), secret)) {
     return res.status(400).send('invalid signature')
   }
 
