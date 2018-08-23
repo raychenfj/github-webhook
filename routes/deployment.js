@@ -10,7 +10,14 @@ router.post('/', function (req, res, next) {
   if (!req.body) {
     return res.status(500).send('empty request body')
   }
-  const repository = req.body.repository
+
+  console.log(req.body)
+
+  if (!req.body.payload) {
+    return res.status(500).send('empty payload')
+  }
+
+  const repository = req.body.payload.repository
   const repoConfig = config[repository.name]
   if (!repoConfig) {
     return res.status(500).send(`repository ${repository.name} is not registered`)
