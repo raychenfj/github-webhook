@@ -7,7 +7,7 @@ const to = require('to-case')
 const exec = require('sync-exec')
 
 function extractPayload (res) {
-  switch (res.get('Content-Type')) {
+  switch (res.get('content-type')) {
     case 'application/json':
       return res.body
     case 'application/x-www-form-urlencoded':
