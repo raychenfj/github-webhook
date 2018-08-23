@@ -53,12 +53,12 @@ router.post('/', function (req, res, next) {
     return res.status(400).send('invalid signature')
   }
 
+  res.send('deployment start')
+
   repoConfig.scripts.forEach(cmd => {
     console.info(cmd)
     console.info(exec(cmd))
   })
-
-  return res.send('deployment complete')
 })
 
 module.exports = router
