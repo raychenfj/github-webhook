@@ -53,7 +53,10 @@ router.post('/', function (req, res, next) {
     return res.status(400).send('invalid signature')
   }
 
-  repoConfig.scripts.forEach(cmd => console.info(exec(cmd)))
+  repoConfig.scripts.forEach(cmd => {
+    console.info(cmd)
+    console.info(exec(cmd))
+  })
 
   return res.send('deployment complete')
 })

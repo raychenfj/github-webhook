@@ -5,7 +5,7 @@ module.exports = {
     scripts: [
       'git clone https://github.com/raychenfj/psn-notification.git',
       'cd psn-notification',
-      'checkout deployment',
+      'git checkout deployment',
       'docker rm -f psn-notification',
       'docker rmi psn-notification',
       'docker build -t psn-notification .',
