@@ -6,12 +6,12 @@ const util = require('../util')
 const to = require('to-case')
 const exec = require('sync-exec')
 
-function extractPayload (res) {
-  switch (res.get('content-type')) {
+function extractPayload (req) {
+  switch (req.get('content-type')) {
     case 'application/json':
-      return res.body
+      return req.body
     case 'application/x-www-form-urlencoded':
-      return JSON.parse(res.body.payload)
+      return JSON.parse(req.body.payload)
   }
 }
 
@@ -20,7 +20,7 @@ router.post('/', function (req, res, next) {
     return res.status(500).send('empty request body')
   }
 
-  const payload = extractPayload(res)
+  const payload = extractPayload(req)
 
   const repository = payload.repository
   const repoConfig = config[repository.name]
@@ -42,7 +42,7 @@ router.post('/', function (req, res, next) {
     }
   }
 
-  const signature = res.get('X-Hub-Signature')
+  const signature = req.get('X-Hub-Signature')
   const secret = process.env[`GITHUB_WEBHOOK_${to.snake(repository.name).toUpperCase()}_SECRET`]
 
   if (!secret) {
