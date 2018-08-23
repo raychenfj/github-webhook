@@ -7,7 +7,7 @@ const to = require('to-case')
 const exec = require('sync-exec')
 
 router.post('/', function (req, res, next) {
-  if (req.body) {
+  if (!req.body) {
     return res.status(500).send('empty request body')
   }
   const repository = req.body.repository
