@@ -2,7 +2,7 @@ module.exports = {
   'psn-notification': {
     ref: 'refs/heads/deployment',
     events: ['push'],
-    script: [
+    scripts: [
       'git clone https://github.com/raychenfj/psn-notification.git',
       'cd psn-notification',
       'checkout deployment',
