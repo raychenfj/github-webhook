@@ -20,6 +20,16 @@ router.post('/', function (req, res, next) {
     return res.send('ref is not matched, skip deployment')
   }
 
+  if (config.events) {
+    const containValidEvents = req.body.events.reduce((prev, cur) => {
+      return prev || config.events.indexOf(cur) !== -1
+    }, false)
+
+    if (!containValidEvents) {
+      return res.send('events are not matched, skip deployment')
+    }
+  }
+
   const signature = res.get('X-Hub-Signature')
   const secret = process.env[`GITHUB_WEBHOOK_${to.snake(repository.name).toUpperCase()}_SECRET`]
 
